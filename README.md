@@ -63,6 +63,6 @@ Freeing memory at address 0x5afbd526d2d8
 Freeing memory at address 0x5afbd526d0d8
 Freeing memory at address 0x5afbd526d058
 ```
-#### `Fix`:
--[ ] Infinitee loop from testing `stress.c` 
+#### `To Fix`:
+- [ ] Infinite loop wiht testing `stress.c` 
 
