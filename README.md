@@ -26,14 +26,43 @@ The HMM implementation consists of the following key components:
 
 ### `hmmAlloc()` Flowchart
 
+![Screenshot from 2024-08-21 22-32-50](https://github.com/user-attachments/assets/34995463-d385-47ce-9052-501d118c1b80)
 
 
 ### `hmmFree()` Flowchart
+![Screenshot from 2024-08-21 22-31-32](https://github.com/user-attachments/assets/4e8c90b9-8bee-4818-a396-9c37f1b0edfd)
 
 
-## Compilation
+## Testing with `stress.c`
+```Bash
+belal@Ubuntu:~/Desktop/st/HMM/main$ gcc -o c hmm.c fs.c 
+belal@Ubuntu:~/Desktop/st/HMM/main$ ./c 1 1 10
+etext = 0x587103cbb97d, edata=0x587103cbe010, end=0x587103cc0070, initial program break=0x587104248000
+Initial program break:          0x587104269000
+Allocating 1*1 bytes
+Program break is now:           0x587104269000
+Freeing blocks from 1 to 1 in steps of 10
+After HmmFree(), program break is: 0x587104269000
+```
 
 
-## Testing
-
+## Testing with `stress.c`
+```Bash
+belal@Ubuntu:~/Desktop/st/HMM/main$ gcc -o c hmm.c stress.c 
+belal@Ubuntu:~/Desktop/st/HMM/main$ ./c
+Starting random allocation and deallocation test...
+Allocated memory of size 8 at address 0x5afbd526d058
+Allocated memory of size 6 at address 0x5afbd526d0d8
+Allocated memory of size 4 at address 0x5afbd526d158
+Allocated memory of size 4 at address 0x5afbd526d1d8
+Allocated memory of size 6 at address 0x5afbd526d258
+Freeing memory at address 0x5afbd526d0d8
+Allocated memory of size 6 at address 0x5afbd526d0d8
+Allocated memory of size 1 at address 0x5afbd526d2d8
+Freeing memory at address 0x5afbd526d2d8
+Freeing memory at address 0x5afbd526d0d8
+Freeing memory at address 0x5afbd526d058
+```
+#### `Fix`:
+-[ ] Infinitee loop from testing `stress.c` 
 
