@@ -33,7 +33,7 @@ The HMM implementation consists of the following key components:
 ![Screenshot from 2024-08-21 22-31-32](https://github.com/user-attachments/assets/4e8c90b9-8bee-4818-a396-9c37f1b0edfd)
 
 
-## Testing with `stress.c`
+## Testing 
 ```Bash
 belal@Ubuntu:~/Desktop/st/HMM/main$ gcc -o c hmm.c fs.c 
 belal@Ubuntu:~/Desktop/st/HMM/main$ ./c 1 1 10
