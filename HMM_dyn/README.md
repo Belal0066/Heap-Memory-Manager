@@ -27,7 +27,4 @@ This project provides a simple custom implementation of malloc, free, calloc, an
 - `void *calloc(size_t nmemb, size_t size)`: Allocates memory for an array of `nmemb` elements of `size` bytes each and initializes to zero.
 - `void *realloc(void *ptr, size_t size)`: Changes the size of the memory block pointed to by `ptr` to `size` bytes.
 
-## Limitations
-- It only works with builtin commands (pwd, type, etc..).
-- Support for external will be provided ASAP.
 
