@@ -1,31 +1,35 @@
-//HHM.h
-#ifndef HMM_h
-#define HMM_h
+#ifndef HMM_H
+#define HMM_H
 
-#include<stddef.h> 
+#include <stddef.h> 
 #include <stdio.h>
-
-#define HEAP_SIZE 1024
-#define ALIGN_SIZE 8
-
-
-struct BlkHdr{
-	int free; 
-	size_t size; 
-	struct BlkHdr *nxt; 
-};
+#include <stdint.h>
+#include <stdbool.h>
 
 
-
-static unsigned int hpArr[HEAP_SIZE];
-static size_t hpBrk = 0; 
-
+#define MEMORY_SIZE 1024*1024*100  // 100 MB 
+#define ALIGNMENT 8
 
 
-static struct BlkHdr* freeList = NULL;
-int ceil2nALIGN_SIZE(size_t memSize);
+typedef struct BlockHeader {
+    size_t size;
+    bool is_free;
+    struct BlockHeader* next;
+    struct BlockHeader* prev;
+} BlockHeader;
+
+
+
 
 void* hmmAlloc(size_t size);
+
 void hmmFree(void* ptr);
 
-#endif
+void* get_program_break(void);
+
+
+void print_heap_state();
+
+
+
+#endif // HMM_H
