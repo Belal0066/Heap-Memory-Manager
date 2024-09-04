@@ -13,14 +13,15 @@ void* my_sbrk(intptr_t increment) {
     return old_break;
 }
 
+void* get_program_break(void) {
+    return my_sbrk(0);
+}
 
 size_t ceilTo_N_ALIGNMENT(size_t size) {
     return (size + ALIGNMENT - 1) & ~(ALIGNMENT - 1);
 } 
 
-void* get_program_break(void) {
-    return my_sbrk(0);
-}
+
 
 void* hmmAlloc(size_t size) {
     if (size == 0) {
