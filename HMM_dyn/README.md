@@ -15,7 +15,7 @@ This project provides a simple custom implementation of malloc, free, calloc, an
 
 2. Run:
    ```bash
-   LD_PRELOAD=./ibdhmm.so ./prog
+   LD_PRELOAD=./libdhmm.so ./prog
    ```
 
 
