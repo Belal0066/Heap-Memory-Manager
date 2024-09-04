@@ -1,145 +1,150 @@
 #include "hmm.h"
-int ceil2nALIGN_SIZE(size_t memSize)
-{
-    if (memSize & (ALIGN_SIZE - 1))
-    {
-        return ((memSize + (ALIGN_SIZE - 1)) & ~(ALIGN_SIZE - 1));
+
+static BlockHeader* free_list = NULL;
+static uint8_t memory[MEMORY_SIZE];
+static void* program_break = memory;
+
+void* my_sbrk(intptr_t increment) {
+    if ((uintptr_t)program_break + increment > (uintptr_t)memory + MEMORY_SIZE) {
+        return (void*)-1;  
     }
-    return memSize;
+    void* old_break = program_break;
+    program_break += increment;
+    return old_break;
 }
-#define MIN_BLOCK_SIZE (ceil2nALIGN_SIZE(sizeof(struct BlkHdr)) + ceil2nALIGN_SIZE(sizeof(void *)))
-static struct BlkHdr *findFreeBlock(size_t size)
-{
-    struct BlkHdr *current = freeList;
-    while (current != NULL)
-    {
-        if (current->free && current->size >= size)
-        {
-            return current;
+
+
+size_t ceilTo_N_ALIGNMENT(size_t size) {
+    return (size + ALIGNMENT - 1) & ~(ALIGNMENT - 1);
+} 
+
+void* get_program_break(void) {
+    return my_sbrk(0);
+}
+
+void* hmmAlloc(size_t size) {
+    if (size == 0) {
+        size = sizeof(BlockHeader);
+    }
+    else {
+        size = ceilTo_N_ALIGNMENT(size);
+    }
+
+    size_t total_size = size + sizeof(BlockHeader);
+    BlockHeader* current = free_list;
+    BlockHeader* best_fit = NULL;
+
+    
+    while (current != NULL) {
+        if (current->is_free && current->size >= total_size) {
+            if (best_fit == NULL || current->size < best_fit->size) {
+                best_fit = current;
+            }
         }
-        current = current->nxt;
-    }
-    return NULL;
-}
-static struct BlkHdr *allocateNewBlock(size_t size)
-{
-    if (hpBrk + size > HEAP_SIZE)
-    {
-        return NULL;
-    }
-    struct BlkHdr *block = (struct BlkHdr *)&hpArr[hpBrk];
-    block->size = size;
-    block->free = 0;
-    block->nxt = NULL;
-    hpBrk += size;
-    return block;
-}
-static void splitBlock(struct BlkHdr *block, size_t size)
-{
-    if (block->size >= size + MIN_BLOCK_SIZE)
-    {
-        struct BlkHdr *newBlock = (struct BlkHdr *)((unsigned char *)block + size);
-        newBlock->size = block->size - size;
-        newBlock->free = 1;
-        newBlock->nxt = block->nxt;
-
-        block->size = size;
-        block->nxt = newBlock;
-    }
-}
-void *hmmAlloc(size_t size)
-{
-    if (size == 0)
-    {
-        return NULL;
-    }
-    size = ceil2nALIGN_SIZE(size) + ceil2nALIGN_SIZE(sizeof(struct BlkHdr));
-    struct BlkHdr *block = findFreeBlock(size);
-    if (block)
-    {
-        block->free = 0;
-        splitBlock(block, size);
-        return (void *)((unsigned char *)block + ceil2nALIGN_SIZE(sizeof(struct BlkHdr)));
+        current = current->next;
     }
 
-    block = allocateNewBlock(size);
-    if (!block)
-    {
-        return NULL;
-    }
-    return (void *)((unsigned char *)block + ceil2nALIGN_SIZE(sizeof(struct BlkHdr)));
-}
-static struct BlkHdr *coalescePrev(struct BlkHdr *block)
-{
-    struct BlkHdr *current = freeList;
-    struct BlkHdr *prev = NULL;
+    if (best_fit != NULL) {
+        if (best_fit->size >= total_size + sizeof(BlockHeader) + 1) {
+            
+            BlockHeader* new_block = (BlockHeader*)((char*)best_fit + total_size);
+            new_block->size = best_fit->size - total_size;
+            new_block->is_free = true;
+            new_block->next = best_fit->next;
+            new_block->prev = best_fit;
 
-    while (current != NULL && current != block)
-    {
-        prev = current;
-        current = current->nxt;
-    }
-
-    if (current == block)
-    {
-
-        if (prev != NULL && prev->free)
-        {
-            prev->size += block->size;
-            prev->nxt = block->nxt;
-            block = prev;
+            if (best_fit->next != NULL) {
+                best_fit->next->prev = new_block;
+            }
+            best_fit->next = new_block;
+            best_fit->size = total_size;
         }
+        best_fit->is_free = false;
+        return (char*)best_fit + sizeof(BlockHeader);
     }
-    return block;
-}
-static struct BlkHdr *coalesceNext(struct BlkHdr *block)
-{
-    if (block->nxt != NULL && block->nxt->free)
-    {
-        block->size += block->nxt->size;
-        block->nxt = block->nxt->nxt;
+
+    
+    BlockHeader* new_block = my_sbrk(total_size);
+    if (new_block == (void*)-1) {
+        return NULL;  
+        printf("Out of memory\n");
     }
-    return block;
+
+    new_block->size = total_size;
+    new_block->is_free = false;
+    new_block->next = NULL;
+    new_block->prev = NULL;
+
+    
+    if (free_list == NULL) {
+        free_list = new_block;
+    } else {
+        current = free_list;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = new_block;
+        new_block->prev = current;
+    }
+
+    return (char*)new_block + sizeof(BlockHeader);
 }
-void hmmFree(void *ptr)
-{
-    if (ptr == NULL)
-    {
+
+void hmmFree(void* ptr) {
+    if (ptr == NULL) {
         return;
     }
 
-    struct BlkHdr *block = (struct BlkHdr *)((unsigned char *)ptr - ceil2nALIGN_SIZE(sizeof(struct BlkHdr)));
 
-    block->free = 1;
-
-    block = coalescePrev(block);
-    block = coalesceNext(block);
-
-    if (freeList == NULL)
-    {
-        freeList = block;
-        block->nxt = NULL;
+    BlockHeader* block = (BlockHeader*)((char*)ptr - sizeof(BlockHeader));
+    if (block->is_free) {
+        
+        fprintf(stderr, "Error: Attempt to double free memory at %p\n", ptr);
+        return; 
     }
-    else
-    {
-        struct BlkHdr *current = freeList;
-        struct BlkHdr *prev = NULL;
-        while (current != NULL && current < block)
-        {
-            prev = current;
-            current = current->nxt;
-        }
-        if (prev == NULL)
-        {
+    block->is_free = true;
 
-            block->nxt = freeList;
-            freeList = block;
+    
+    if (block->prev != NULL && block->prev->is_free) {
+        block->prev->size += block->size;
+        block->prev->next = block->next;
+        if (block->next != NULL) {
+            block->next->prev = block->prev;
         }
-        else
-        {
+        block = block->prev;
+    }
 
-            block->nxt = current;
-            prev->nxt = block;
+    if (block->next != NULL && block->next->is_free) {
+        block->size += block->next->size;
+        block->next = block->next->next;
+        if (block->next != NULL) {
+            block->next->prev = block;
         }
+    }
+
+    
+    if (block->next == NULL && (char*)block + block->size == program_break) {
+        if (block->prev != NULL) {
+            block->prev->next = NULL;
+        } else {
+            free_list = NULL;
+        }
+        my_sbrk(-(intptr_t)block->size);
     }
 }
+
+
+void print_heap_state() {
+    BlockHeader* current = free_list;
+    printf("Heap state:\n");
+    while (current != NULL) {
+        printf("Block at %p: size=%zu, is_free=%d\n", 
+               (void*)current, current->size, current->is_free);
+        current = current->next;
+    }
+    printf("Program break: %p\n", program_break);
+    printf("\n");
+}
+
+
+
