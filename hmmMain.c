@@ -1,6 +1,5 @@
 #include "hmm.h"
 
-// Use the implementation
 int main() {
     printf("Initial state:\n");
     print_heap_state();
