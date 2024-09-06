@@ -1,4 +1,3 @@
-# Compiler and flags
 CC = gcc
 CFLAGS = -g
 
@@ -38,7 +37,6 @@ $(TARGET_MAIN): $(OBJECTS_MAIN)
 	$(CC) $(CFLAGS) -o $(TARGET_MAIN) $(OBJECTS_MAIN)
 
 
-# Compile source files into object files for _test_hmm
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -47,7 +45,7 @@ $(TARGET_MAIN): $(OBJECTS_MAIN)
 testHmm: $(TARGET_HMM)
 	@./testScript.sh
 
-# Allow custom parameters for _test_hmm
+# Custom parameters for _test_hmm
 customTestHmm: $(TARGET_HMM)
 	@echo  "\n${YELLOW}Running _test_hmm with custom parameters: $(args)...${RESET}"
 	@./$(TARGET_HMM) $(args)
@@ -65,7 +63,6 @@ runMain: $(TARGET_MAIN)
 	@./$(TARGET_MAIN)
 
 
-# Clean up generated files
 clean:
 	$(RM) $(TARGET_HMM) $(TARGET_STRESS) $(TARGET_MAIN) $(OBJECTS_HMM) $(OBJECTS_STRESS) $(OBJECTS_MAIN)
 
