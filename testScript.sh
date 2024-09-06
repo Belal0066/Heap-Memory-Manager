@@ -36,10 +36,3 @@ run_test "./_test_hmm 10 1048544" "memory exhaustion test" "Test passed" "Test f
 
 echo  "\n${YELLOW}All _test_hmm tests completed.${RESET}"
 
-# # Stress tests
-# echo  "\n${YELLOW}Running stress tests with _test_stress...${RESET}"
-# if ./_test_stress | tee /dev/stderr | grep -q 'failed'; then
-#     echo  "${RED} ✗ Stress test failed${RESET}"
-# else
-#     echo  "${GREEN} ✓ Stress test passed${RESET}"
-# fi
