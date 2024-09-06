@@ -31,7 +31,7 @@ This project is a simple simulation of a heap memory manager in C, designed to m
   - Ensures alignment of allocated memory to a defined boundary (default is 8 bytes).
   - Uses a free list to manage memory blocks efficiently.
 
-  ![hmmAlloc Flowchart](./hmmAllocFlow.svg)
+  ![hmmAlloc Flowchart](./visuals/hmmAllocFlow.svg)
 
 - **Memory Deallocation (`hmmFree`)**: 
   - Frees allocated memory blocks.
