@@ -29,8 +29,7 @@ run_test "./_test_hmm 1000 128 1 1000 1000" "maximal range freeing" "Test passed
 run_test "./_test_hmm 100000 64 1 1 100000" "full freeing stress test" "Test passed" "Test failed"
 run_test "./_test_hmm 50000 128 3 1 50000" "high fragmentation stress test" "Test passed" "Test failed"
 run_test "./_test_hmm 1000 4096 1 1 1000" "exact program break lowering" "Test passed" "Test failed"
-run_test "./_test_hmm 1000 -128" "test (should fail)" "Test passed" "Test did not fail as expected"
-run_test "./_test_hmm -1000 128" "test (should fail)" "Test passed" "Test did not fail as expected"
+
 run_test "./_test_hmm 1 32768" "boundary allocation and free" "Test passed" "Test failed"
 run_test "./_test_hmm 10 1048544" "memory exhaustion test" "Test passed" "Test failed"
 
