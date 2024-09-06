@@ -4,6 +4,8 @@ static BlockHeader* free_list = NULL;
 static uint8_t memory[MEMORY_SIZE];
 static void* program_break = memory;
 
+#define ceilTo_N_ALIGNMENT(size) (((size) + (ALIGNMENT-1)) & ~(ALIGNMENT-1))
+
 void* my_sbrk(intptr_t increment) {
     if ((uintptr_t)program_break + increment > (uintptr_t)memory + MEMORY_SIZE) {
         return (void*)-1;  
@@ -16,12 +18,6 @@ void* my_sbrk(intptr_t increment) {
 void* get_program_break(void) {
     return my_sbrk(0);
 }
-
-size_t ceilTo_N_ALIGNMENT(size_t size) {
-    return (size + ALIGNMENT - 1) & ~(ALIGNMENT - 1);
-} 
-
-
 
 void* hmmAlloc(size_t size) {
     if (size == 0) {
