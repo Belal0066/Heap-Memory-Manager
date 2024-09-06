@@ -38,7 +38,7 @@ This project is a simple simulation of a heap memory manager in C, designed to m
   - Supports coalescing of adjacent free blocks to minimize fragmentation.
   - Detects double frees and prevents memory corruption.
 
-  ![hmmFree Flowchart](./hmmFreeFlow.svg)
+  ![hmmFree Flowchart](./visuals/hmmFreeFlow.svg)
 
   **Best-fit algorithm**: Allocates the smallest available free block that is large enough to satisfy the request.
 
