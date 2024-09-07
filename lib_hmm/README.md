@@ -1,6 +1,18 @@
 # HMM Library
 
-a custom memory allocation library that implements standard memory allocation functions.
+The HMM Library is a custom memory allocation library that implements standard memory allocation functions such as `malloc`, `free`, `calloc`, and `realloc`. It uses a best-fit allocation strategy and includes features like memory coalescing to reduce fragmentation and optional logging of allocation and deallocation operations.
+
+
+## Table of Contents
+
+- [Features](#features)
+- [Functionality](#functionality)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Limitations](#limitations)
+
+
+
 ## Files
 
 - `libhmm.c`: Main implementation of the custom allocator
@@ -34,7 +46,7 @@ Changes the size of the memory block pointed to by `ptr` to `size` bytes. The co
 
 ## Configuration
 
-The allocator can be configured by modifying the following macros in `libhmm.c`:
+The libhmm can be configured by modifying the following macros in `libhmm.h`:
 
 - `LOG_MODE`: Set to 1 to enable logging of allocation and deallocation operations
 - `ALIGNMENT`: Set the byte alignment for allocated memory (default is 8)
@@ -55,6 +67,6 @@ The allocator can be configured by modifying the following macros in `libhmm.c`:
 
 ## Limitations
 
-- This allocator is not thread-safe. It should not be used in multi-threaded applications without additional synchronization.
-- The logging feature, when enabled, may impact performance and generate large log files for allocation-heavy applications.
+- This hmm is not thread-safe. It should not be used in multi-threaded applications without additional synchronization.
+- The logging feature, when enabled, may impact performance and generate large log file for allocation-heavy applications.
 

@@ -1,13 +1,13 @@
 CC = gcc
 CFLAGS = -g
 
-TARGET_HMM = _test_hmm
-TARGET_STRESS = _test_stress
-TARGET_MAIN = hmmMain
+TARGET_HMM = ./tests/_test_hmm
+TARGET_STRESS = ./tests/_test_stress
+TARGET_MAIN = ./src/hmmMain
 
-SOURCES_HMM = hmm.c _test_hmm.c
-SOURCES_STRESS = hmm.c _test_stress.c
-SOURCES_MAIN = hmm.c hmmMain.c
+SOURCES_HMM = ./src/hmm.c ./tests/_test_hmm.c
+SOURCES_STRESS = ./src/hmm.c ./tests/_test_stress.c
+SOURCES_MAIN = ./src/hmm.c ./src/hmmMain.c
 
 OBJECTS_HMM = $(SOURCES_HMM:.c=.o)
 OBJECTS_STRESS = $(SOURCES_STRESS:.c=.o)
@@ -36,32 +36,28 @@ $(TARGET_STRESS): $(OBJECTS_STRESS)
 $(TARGET_MAIN): $(OBJECTS_MAIN)
 	$(CC) $(CFLAGS) -o $(TARGET_MAIN) $(OBJECTS_MAIN)
 
-
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-
 # Run tests for _test_hmm
 testHmm: $(TARGET_HMM)
-	@./testScript.sh
+	@chmod +x ./tests/testScript.sh
+	@./tests/testScript.sh
 
 # Custom parameters for _test_hmm
 customTestHmm: $(TARGET_HMM)
 	@echo  "\n${YELLOW}Running _test_hmm with custom parameters: $(args)...${RESET}"
 	@./$(TARGET_HMM) $(args)
 
-
 # Run tests for _test_stress
 testStress: $(TARGET_STRESS)
 	@echo  "\n${YELLOW}Running stress tests with _test_stress...${RESET}"
 	@./$(TARGET_STRESS) | tee /dev/stderr | (grep -q 'failed' && echo  "${RED} ✗ Stress test failed${RESET}" || echo  "${GREEN} ✓ Stress test passed${RESET}")
 
-
 # Run hmmMain
 runMain: $(TARGET_MAIN)
 	@echo  "\n${YELLOW}Running hmmMain...${RESET}"
 	@./$(TARGET_MAIN)
-
 
 clean:
 	$(RM) $(TARGET_HMM) $(TARGET_STRESS) $(TARGET_MAIN) $(OBJECTS_HMM) $(OBJECTS_STRESS) $(OBJECTS_MAIN)

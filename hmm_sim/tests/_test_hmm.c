@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "hmm.h"
+#include "../src/hmm.h"
 
 #define MAX_ALLOCS 1000000
 #define getInt(x, ...) atoi(x)

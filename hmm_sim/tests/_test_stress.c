@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "hmm.h"
+#include "../src/hmm.h"
 
 #define NUM_ALLOCS 10000
 #define MAX_SIZE 10240
