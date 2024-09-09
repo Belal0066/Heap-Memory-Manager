@@ -1,22 +1,18 @@
 #include "libhmm.h"
 
-#define ceilTo_N_ALIGNMENT(size) (((size) + (ALIGNMENT-1)) & ~(ALIGNMENT-1))
+#define ceil_n_ALIGNMENT(size) (((size) + (ALIGNMENT - 1)) & ~(ALIGNMENT - 1))
 
+#define ceil_n_PAGE_SIZE(size) (((size) + (PAGE_SIZE - 1)) & ~(PAGE_SIZE - 1))
 
 void *request_more_memory(size_t size)
 {
-    void *prev_break = sbrk(size);
+    size_t total_size = ceil_n_PAGE_SIZE(size);
+    void *prev_break = sbrk(total_size);
     if (prev_break == (void *)-1)
     {
-        return NULL; 
+        return NULL;
     }
     return prev_break;
-}
-
-
-void *get_program_break(void)
-{
-    return sbrk(0);
 }
 
 
@@ -39,10 +35,9 @@ BlockHeader *find_best_fit_block(size_t size)
     return best_fit;
 }
 
-
 void coalesce_free_blocks(BlockHeader *block)
 {
-    
+
     if (block->next && block->next->is_free)
     {
         block->size += sizeof(BlockHeader) + block->next->size;
@@ -53,7 +48,6 @@ void coalesce_free_blocks(BlockHeader *block)
         }
     }
 
-    
     if (block->prev && block->prev->is_free)
     {
         block->prev->size += sizeof(BlockHeader) + block->size;
@@ -67,25 +61,25 @@ void coalesce_free_blocks(BlockHeader *block)
 
 void *hmmAlloc(size_t size)
 {
-    if (size == 0) {
+    if (size == 0)
+    {
         size = sizeof(BlockHeader);
     }
-    else {
-        size = ceilTo_N_ALIGNMENT(size);
+    else
+    {
+        size = ceil_n_ALIGNMENT(size);
     }
-
-    
 
     size_t total_size = sizeof(BlockHeader) + size;
     BlockHeader *block = find_best_fit_block(total_size);
 
     if (!block)
     {
-        
+
         block = request_more_memory(total_size);
         if (!block)
         {
-            return NULL; 
+            return NULL;
         }
 
         block->size = size;
@@ -95,11 +89,9 @@ void *hmmAlloc(size_t size)
     }
     else
     {
-        
         block->is_free = 0;
     }
 
-    
     if (block->size > size + sizeof(BlockHeader))
     {
         BlockHeader *new_block = (BlockHeader *)((char *)block + sizeof(BlockHeader) + size);
@@ -129,26 +121,24 @@ void hmmFree(void *ptr)
 
     if (block->is_free)
     {
-        
+
         fprintf(stderr, "Error: Double free detected\n");
         return;
     }
 
     block->is_free = 1;
 
-    
     coalesce_free_blocks(block);
 }
 
-
+// allocation functions
 void *malloc(size_t size)
 {
     if (LOG_MODE == 1)
     {
-        
+
         int fd;
 
-        
         fd = open("outputING.txt", O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
         if (fd < 0)
         {
@@ -156,12 +146,10 @@ void *malloc(size_t size)
             return NULL;
         }
 
-        
         char log_message[50];
         void *ptr = hmmAlloc(size);
         int len = snprintf(log_message, sizeof(log_message), "Malloc called with size: %zu, %p\n", size, ptr);
 
-        
         ssize_t bytes_written = write(fd, log_message, len);
         if (bytes_written < 0)
         {
@@ -170,24 +158,22 @@ void *malloc(size_t size)
             return NULL;
         }
 
-        
         close(fd);
 
         return ptr;
-    } else
+    }
+    else
 
-    return hmmAlloc(size);
+        return hmmAlloc(size);
 }
-
 
 void free(void *ptr)
 {
     if (LOG_MODE == 1)
     {
-        
+
         int fd;
 
-        
         fd = open("outputING.txt", O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
         if (fd < 0)
         {
@@ -195,11 +181,9 @@ void free(void *ptr)
             return;
         }
 
-        
         char log_message[50];
         int len = snprintf(log_message, sizeof(log_message), "Free called for: %p\n", ptr);
 
-        
         ssize_t bytes_written = write(fd, log_message, len);
         if (bytes_written < 0)
         {
@@ -207,7 +191,6 @@ void free(void *ptr)
             close(fd);
         }
 
-        
         close(fd);
         hmmFree(ptr);
     }
@@ -215,7 +198,6 @@ void free(void *ptr)
 
         hmmFree(ptr);
 }
-
 
 void *calloc(size_t nmemb, size_t size)
 {
@@ -227,7 +209,6 @@ void *calloc(size_t nmemb, size_t size)
     }
     return ptr;
 }
-
 
 void *realloc(void *ptr, size_t size)
 {
