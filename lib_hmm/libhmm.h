@@ -14,8 +14,9 @@
 #include <string.h>
 
 #define LOG_MODE 0
-#define ALIGNMENT 8
 
+#define ALIGNMENT 8
+#define PAGE_SIZE 4096
 
 
 typedef struct BlockHeader
