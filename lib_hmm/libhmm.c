@@ -40,7 +40,7 @@ void coalesce_free_blocks(BlockHeader *block)
 
     if (block->next && block->next->is_free)
     {
-        block->size += sizeof(BlockHeader) + block->next->size;
+        block->size += block->next->size;
         block->next = block->next->next;
         if (block->next)
         {
@@ -50,7 +50,7 @@ void coalesce_free_blocks(BlockHeader *block)
 
     if (block->prev && block->prev->is_free)
     {
-        block->prev->size += sizeof(BlockHeader) + block->size;
+        block->prev->size += block->size;
         block->prev->next = block->next;
         if (block->next)
         {
@@ -95,7 +95,7 @@ void *hmmAlloc(size_t size)
     if (block->size > size + sizeof(BlockHeader))
     {
         BlockHeader *new_block = (BlockHeader *)((char *)block + sizeof(BlockHeader) + size);
-        new_block->size = block->size - sizeof(BlockHeader) - size;
+        new_block->size = block->size - size;
         new_block->is_free = 1;
         new_block->next = block->next;
         new_block->prev = block;
