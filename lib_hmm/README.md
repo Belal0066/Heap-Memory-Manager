@@ -50,7 +50,7 @@ The libhmm can be configured by modifying the following macros in `libhmm.h`:
 
 - `LOG_MODE`: Set to 1 to enable logging of allocation and deallocation operations
 - `ALIGNMENT`: Set the byte alignment for allocated memory (default is 8)
-
+- `PAGE_SIZE`: Set the size of memory pages requested from the system (default is 4096)
 
 ## Usage
 
