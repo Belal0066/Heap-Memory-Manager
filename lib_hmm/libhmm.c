@@ -61,16 +61,18 @@ void coalesce_free_blocks(BlockHeader *block)
 
 void *hmmAlloc(size_t size)
 {
+    size_t total_size;
+    
     if (size == 0)
     {
-        size = sizeof(BlockHeader);
+        total_size = sizeof(BlockHeader);
     }
     else
     {
         size = ceil_n_ALIGNMENT(size);
+        total_size = sizeof(BlockHeader) + size;
     }
-
-    size_t total_size = sizeof(BlockHeader) + size;
+    
     BlockHeader *block = find_best_fit_block(total_size);
 
     if (!block)
