@@ -114,7 +114,7 @@ void *hmmAlloc(size_t size)
 
 void hmmFree(void *ptr)
 {
-    if (!ptr || ptr == NULL)
+    if (!ptr)
         return;
 
     BlockHeader *block = (BlockHeader *)ptr - 1;
@@ -134,69 +134,48 @@ void hmmFree(void *ptr)
 // allocation functions
 void *malloc(size_t size)
 {
-    if (LOG_MODE == 1)
+    #ifdef LOG_MODE
     {
 
         int fd;
 
         fd = open("outputING.txt", O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-        if (fd < 0)
-        {
-            perror("open");
-            return NULL;
-        }
-
+  
         char log_message[50];
         void *ptr = hmmAlloc(size);
         int len = snprintf(log_message, sizeof(log_message), "Malloc called with size: %zu, %p\n", size, ptr);
 
-        ssize_t bytes_written = write(fd, log_message, len);
-        if (bytes_written < 0)
-        {
-            perror("write");
-            close(fd);
-            return NULL;
-        }
+        write(fd, log_message, len);
 
         close(fd);
 
         return ptr;
     }
-    else
+    #endif
 
-        return hmmAlloc(size);
+    return hmmAlloc(size);
 }
 
 void free(void *ptr)
 {
-    if (LOG_MODE == 1)
+    #ifdef LOG_MODE
     {
 
         int fd;
 
         fd = open("outputING.txt", O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-        if (fd < 0)
-        {
-            perror("open");
-            return;
-        }
 
         char log_message[50];
         int len = snprintf(log_message, sizeof(log_message), "Free called for: %p\n", ptr);
 
-        ssize_t bytes_written = write(fd, log_message, len);
-        if (bytes_written < 0)
-        {
-            perror("write");
-            close(fd);
-        }
+        write(fd, log_message, len);
 
         close(fd);
         hmmFree(ptr);
+        return;
     }
-    else
-
-        hmmFree(ptr);
+    #endif
+    hmmFree(ptr);
 }
 
 void *calloc(size_t nmemb, size_t size)
