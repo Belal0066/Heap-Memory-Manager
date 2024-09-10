@@ -13,10 +13,11 @@
 #include <sys/stat.h>
 #include <string.h>
 
-#define LOG_MODE 0
-
+//Config
 #define ALIGNMENT 8
 #define PAGE_SIZE 4096
+// #define LOG_MODE
+
 
 
 typedef struct BlockHeader
