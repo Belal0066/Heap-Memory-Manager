@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -fPIC -g
+CFLAGS = -fPIC
 LDFLAGS = -shared
 
 TARGET = libhmm.so
