@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: HMM CI
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
         cd hmm_sim
         make
       
-    - name: Test
+    - name: Basic Tests
       run: |
         cd hmm_sim
         chmod +x ./tests/testScript.sh
@@ -25,4 +25,9 @@ jobs:
     - name: Stress Test
       run: |
         cd hmm_sim
-        make testStress 
+        make testStress
+        
+    - name: Multithreaded Test
+      run: |
+        cd hmm_sim
+        make testMultithread 

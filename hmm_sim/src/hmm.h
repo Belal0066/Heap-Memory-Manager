@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <pthread.h>
 
 
 #define MEMORY_SIZE 1024*1024*100  // 100 MB 

@@ -1,7 +1,31 @@
-## Heap Memory Manager Simulation
+# Heap Memory Manager Simulation (hmm_sim)
 
-This project is a simple simulation of a heap memory manager in C, designed to manage dynamic memory allocation, deallocation, and track the state of the heap. The project simulates the behavior of low-level memory management routines similar to `malloc`, `free`, and `sbrk` using a **best-fit** algorithm to manage free memory blocks.
+A simulation of a heap memory manager that implements malloc and free functionality using a best-fit allocation algorithm.
 
+## Features
+
+- Custom implementation of memory allocation and deallocation
+- Simulation of program break using a memory array
+- Best-fit algorithm for efficient memory allocation
+- Thread safety with mutex protection
+- Comprehensive test suite including stress tests and multithreaded tests
+
+## Project Structure
+```sh
+├── hmm_sim
+│ ├── makefile
+│ ├── README.md
+│ ├── src
+│ │ ├── hmm.c # Core implementation
+│ │ ├── hmm.h # Header file
+│ │ └── hmmMain.c # Main program
+│ ├── tests
+│ │ ├── test_hmm.c # Basic functionality tests
+│ │ ├── test_stress.c # Stress testing
+│ │ ├── test_multithread.c # Multithreaded stress tests
+│ │ ├── test_multithread_basic.c # Basic multithreaded tests
+│ │ └── testScript.sh # Test script
+```
 ## Table of Contents
 
 - [Files](#files)
@@ -23,6 +47,8 @@ This project is a simple simulation of a heap memory manager in C, designed to m
 - **_test_hmm.c**: Test program to validate the heap memory manager with different allocation and deallocation patterns.
 - **testScript.sh**: Shell script to automate running various test cases for `_test_hmm.c`.
 - **_test_stress.c**: Stress test program to evaluate the robustness of the heap memory manager under random allocation and deallocation scenarios.
+- **_test_multithread.c**: Multithreaded test program to evaluate the robustness of the heap memory manager under multithreaded allocation and deallocation scenarios.
+- **_test_multithread_basic.c**: Basic multithreaded test program to evaluate the robustness of the heap memory manager under multithreaded allocation and deallocation scenarios.
 
 ## Features
 
@@ -48,6 +74,8 @@ This project is a simple simulation of a heap memory manager in C, designed to m
   - Provides a detailed view of the current state of the heap, including memory block sizes and allocation status.
   - Displays the current program break, which indicates the top of the heap.
 
+
+
 ## Functionality
 
 ### 1. Memory Allocation
@@ -72,10 +100,20 @@ This project is a simple simulation of a heap memory manager in C, designed to m
 - **Function**: `void print_heap_state(void)`
 - **Description**: Prints the current state of the heap, including details of each block.
 
+### 5. Multithreaded Support
+
+- **Function**: `void* hmmAlloc_mt(size_t size)`
+- **Description**: Allocates a memory block of the specified size in a thread-safe manner.
+- **Parameters**: Pointer to the memory block to free.
+
+
+
 ## Configuration
 
 - **MEMORY_SIZE**: Configurable size of the simulated heap, defined in `hmm.h` (default is 100 MB).
 - **ALIGNMENT**: The alignment requirement for the memory blocks (default is 8 bytes).
+
+
 
 ## Usage
 1. **Compile the program**:
@@ -103,15 +141,18 @@ This project is a simple simulation of a heap memory manager in C, designed to m
      ```bash
      make testStress
      ```
-
+   - **Run multithreaded tests from `_test_multithread.c`**:
+     ```bash
+     make testMultithread
+     ```
+   - **Run basic multithreaded tests from `_test_multithread_basic.c`**:
+     ```bash
+     make testMultithreadBasic
+     
 2. **Clean up generated files**:
    ```bash
    make clean
    ```
 
 
-
-### Limitations
-
-- This simulation does not handle multi-threading and assumes a single-threaded environment.
 
