@@ -33,13 +33,5 @@ run_test "./tests/_test_hmm 1000 4096 1 1 1000" "exact program break lowering" "
 run_test "./tests/_test_hmm 1 32768" "boundary allocation and free" "Test passed" "Test failed"
 run_test "./tests/_test_hmm 10 1048544" "memory exhaustion test" "Test passed" "Test failed"
 
-# Run multithreaded test
-echo  "\n${YELLOW}Running multithreaded test...${RESET}"
-if ./tests/_test_multithread_basic | tee /dev/stderr | grep -q 'FAILED'; then
-    echo  "${RED} ✗ Multithreaded test failed${RESET}"
-else
-    echo  "${GREEN} ✓ Multithreaded test passed${RESET}"
-fi
-
-echo  "\n${YELLOW}All tests completed.${RESET}"
+echo  "\n${YELLOW}All _test_hmm tests completed.${RESET}"
 

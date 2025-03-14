@@ -16,7 +16,7 @@ jobs:
         cd hmm_sim
         make
       
-    - name: Basic Tests
+    - name: Test
       run: |
         cd hmm_sim
         chmod +x ./tests/testScript.sh
@@ -27,7 +27,7 @@ jobs:
         cd hmm_sim
         make testStress
         
-    - name: Multithreaded Test
+    - name: Basic Multithreaded Test
       run: |
         cd hmm_sim
-        make testMultithread 
+        make testMtBasic 

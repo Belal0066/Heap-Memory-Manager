@@ -4,17 +4,17 @@ CFLAGS = -g -pthread
 TARGET_HMM = ./tests/_test_hmm
 TARGET_STRESS = ./tests/_test_stress
 TARGET_MAIN = ./src/hmmMain
-TARGET_MULTITHREAD = ./tests/_test_multithread_basic
+TARGET_MT_BASIC = ./tests/_test_multithread_basic
 
 SOURCES_HMM = ./src/hmm.c ./tests/_test_hmm.c
 SOURCES_STRESS = ./src/hmm.c ./tests/_test_stress.c
 SOURCES_MAIN = ./src/hmm.c ./src/hmmMain.c
-SOURCES_MULTITHREAD = ./src/hmm.c ./tests/_test_multithread_basic.c
+SOURCES_MT_BASIC = ./src/hmm.c ./tests/_test_multithread_basic.c
 
 OBJECTS_HMM = $(SOURCES_HMM:.c=.o)
 OBJECTS_STRESS = $(SOURCES_STRESS:.c=.o)
 OBJECTS_MAIN = $(SOURCES_MAIN:.c=.o)
-OBJECTS_MULTITHREAD = $(SOURCES_MULTITHREAD:.c=.o)
+OBJECTS_MT_BASIC = $(SOURCES_MT_BASIC:.c=.o)
 
 RM = rm -f
 
@@ -25,7 +25,7 @@ YELLOW = \033[0;33m
 RESET = \033[0m
 
 # Default target
-all: $(TARGET_HMM) $(TARGET_STRESS) $(TARGET_MAIN) $(TARGET_MULTITHREAD)
+all: $(TARGET_HMM) $(TARGET_STRESS) $(TARGET_MAIN) $(TARGET_MT_BASIC)
 
 # Compile the _test_hmm target
 $(TARGET_HMM): $(OBJECTS_HMM)
@@ -40,8 +40,8 @@ $(TARGET_MAIN): $(OBJECTS_MAIN)
 	$(CC) $(CFLAGS) -o $(TARGET_MAIN) $(OBJECTS_MAIN)
 
 # Compile the _test_multithread_basic target
-$(TARGET_MULTITHREAD): $(OBJECTS_MULTITHREAD)
-	$(CC) $(CFLAGS) -o $(TARGET_MULTITHREAD) $(OBJECTS_MULTITHREAD)
+$(TARGET_MT_BASIC): $(OBJECTS_MT_BASIC)
+	$(CC) $(CFLAGS) -o $(TARGET_MT_BASIC) $(OBJECTS_MT_BASIC)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -50,11 +50,6 @@ $(TARGET_MULTITHREAD): $(OBJECTS_MULTITHREAD)
 testHmm: $(TARGET_HMM)
 	@chmod +x ./tests/testScript.sh
 	@./tests/testScript.sh
-
-# Run tests for _test_multithread_basic
-testMultithread: $(TARGET_MULTITHREAD)
-	@echo  "\n${YELLOW}Running multithreaded tests...${RESET}"
-	@./$(TARGET_MULTITHREAD) | tee /dev/stderr | (grep -q 'FAILED' && echo  "${RED} ✗ Multithreaded test failed${RESET}" || echo  "${GREEN} ✓ Multithreaded test passed${RESET}")
 
 # Custom parameters for _test_hmm
 customTestHmm: $(TARGET_HMM)
@@ -66,12 +61,17 @@ testStress: $(TARGET_STRESS)
 	@echo  "\n${YELLOW}Running stress tests with _test_stress...${RESET}"
 	@./$(TARGET_STRESS) | tee /dev/stderr | (grep -q 'failed' && echo  "${RED} ✗ Stress test failed${RESET}" || echo  "${GREEN} ✓ Stress test passed${RESET}")
 
+# Run basic multithreaded test
+testMtBasic: $(TARGET_MT_BASIC)
+	@echo  "\n${YELLOW}Running basic multithreaded test...${RESET}"
+	@./$(TARGET_MT_BASIC) && echo  "${GREEN} ✓ Basic multithreaded test passed${RESET}" || echo  "${RED} ✗ Basic multithreaded test failed${RESET}"
+
 # Run hmmMain
 runMain: $(TARGET_MAIN)
 	@echo  "\n${YELLOW}Running hmmMain...${RESET}"
 	@./$(TARGET_MAIN)
 
 clean:
-	$(RM) $(TARGET_HMM) $(TARGET_STRESS) $(TARGET_MAIN) $(TARGET_MULTITHREAD) $(OBJECTS_HMM) $(OBJECTS_STRESS) $(OBJECTS_MAIN) $(OBJECTS_MULTITHREAD)
+	$(RM) $(TARGET_HMM) $(TARGET_STRESS) $(TARGET_MAIN) $(TARGET_MT_BASIC) $(OBJECTS_HMM) $(OBJECTS_STRESS) $(OBJECTS_MAIN) $(OBJECTS_MT_BASIC)
 
-.PHONY: all clean testHmm testStress runMain testMultithread
+.PHONY: all clean testHmm testStress testMtBasic runMain
