@@ -1,6 +1,7 @@
 # Heap Memory Manager Simulation (hmm_sim)
 
-A simulation of a heap memory manager that implements malloc and free functionality using a best-fit allocation algorithm.
+A simulation of a heap memory manager that implements malloc and free functionality using a best-fit allocation algorithm. Now with thread-safe operations support.
+
 
 ## Features
 
@@ -22,33 +23,20 @@ A simulation of a heap memory manager that implements malloc and free functional
 │ ├── tests
 │ │ ├── test_hmm.c # Basic functionality tests
 │ │ ├── test_stress.c # Stress testing
-│ │ ├── test_multithread.c # Multithreaded stress tests
 │ │ ├── test_multithread_basic.c # Basic multithreaded tests
 │ │ └── testScript.sh # Test script
 ```
 ## Table of Contents
 
-- [Files](#files)
 - [Features](#features)
+- [Project Structure](#project-structure)
 - [Functionality](#functionality)
-  - [Memory Allocation](#1-memory-allocation)
-  - [Memory Deallocation](#2-memory-deallocation)
-  - [Program Break Inspection](#3-program-break-inspection)
-  - [Heap State Printing](#4-heap-state-printing)
+  - [Memory Allocation](#memory-allocation)
+  - [Memory Deallocation](#memory-deallocation)
+  - [Thread-Safe Operations](#thread-safe-operations)
+- [Testing](#testing)
+- [Building and Running](#building-and-running)
 - [Configuration](#configuration)
-- [Usage](#usage)
-- [Limitations](#limitations)
-
-## Files
-
-- **hmm.h**: Header file containing function prototypes and structure definitions.
-- **hmm.c**: Source file implementing the heap memory management logic.
-- **hmmMain.c**: A test program that demonstrates the functionalities by performing a series of allocations and deallocations, with heap state printed at each step.
-- **_test_hmm.c**: Test program to validate the heap memory manager with different allocation and deallocation patterns.
-- **testScript.sh**: Shell script to automate running various test cases for `_test_hmm.c`.
-- **_test_stress.c**: Stress test program to evaluate the robustness of the heap memory manager under random allocation and deallocation scenarios.
-- **_test_multithread.c**: Multithreaded test program to evaluate the robustness of the heap memory manager under multithreaded allocation and deallocation scenarios.
-- **_test_multithread_basic.c**: Basic multithreaded test program to evaluate the robustness of the heap memory manager under multithreaded allocation and deallocation scenarios.
 
 ## Features
 
@@ -107,52 +95,73 @@ A simulation of a heap memory manager that implements malloc and free functional
 - **Parameters**: Pointer to the memory block to free.
 
 
-
 ## Configuration
 
-- **MEMORY_SIZE**: Configurable size of the simulated heap, defined in `hmm.h` (default is 100 MB).
-- **ALIGNMENT**: The alignment requirement for the memory blocks (default is 8 bytes).
+The heap memory manager can be configured through the following parameters in `hmm.h`:
+
+- `MEMORY_SIZE`: Total size of the simulated heap (default: 100MB)
+- `ALIGNMENT`: Memory alignment requirement (default: 8 bytes)
 
 
 
-## Usage
-1. **Compile the program**:
-   You can compile and run different tests or the main program using the provided `Makefile`.
+## Testing
 
-   **Makefile targets**:
-   - **Compile everything**: 
-     ```bash
-     make
-     ```
+The project includes several types of tests:
 
-   - **Run the main test program**:
-     ```bash
-     make runMain
-     ```
-   - **Run tests for `_test_hmm.c`**:
-     ```bash
-     make testHmm
-     ```
-   - **Run with custom parameters** for `_test_hmm.c`:
-     ```bash
-     make customTestHmm args="num-allocs block-size [step [min [max]]]"
-     ```
-   - **Run stress tests from `_test_stress.c`**:
-     ```bash
-     make testStress
-     ```
-   - **Run multithreaded tests from `_test_multithread.c`**:
-     ```bash
-     make testMultithread
-     ```
-   - **Run basic multithreaded tests from `_test_multithread_basic.c`**:
-     ```bash
-     make testMultithreadBasic
-     
-2. **Clean up generated files**:
+1. **Basic Tests** (`_test_hmm.c`)
+   ```bash
+   make testHmm
+   ```
+   Tests basic functionality including allocation, deallocation, and edge cases.
+
+2. **Stress Tests** (`_test_stress.c`)
+   ```bash
+   make testStress
+   ```
+   Tests the heap manager under heavy load with random allocations and deallocations.
+
+3. **Multithreaded Tests** (`_test_multithread_basic.c`)
+   ```bash
+   make testMtBasic
+   ```
+   Tests thread-safe operations with multiple threads performing concurrent allocations and deallocations.
+
+## Building and Running
+
+1. Build all targets:
+   ```bash
+   make
+   ```
+
+2. Run specific tests:
+   ```bash
+   make testHmm      # Run basic tests
+   make testStress   # Run stress tests
+   make testMtBasic  # Run multithreaded tests
+   ```
+
+3. Run the main program:
+   ```bash
+   make runMain
+   ```
+
+4. Clean build files:
    ```bash
    make clean
    ```
 
 
+## Thread Safety
 
+Thread safety is implemented using a mutex lock to protect critical sections during memory operations. When using the heap manager in a multithreaded environment:
+
+- Use `hmmAlloc_mt()` instead of `hmmAlloc()`
+- Use `hmmFree_mt()` instead of `hmmFree()`
+
+These thread-safe versions ensure that memory operations are atomic and prevent race conditions.
+
+## Limitations
+
+- The total memory size is fixed at compile time
+- Thread-safe operations may have slightly higher overhead due to mutex locking
+- The simulated heap exists in process memory and does not persist between runs
